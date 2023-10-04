@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>기능만 있는 게시판</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+      margin-bottom: 30px;
+      border-radius: 10px;
+    }
+
+    .text-animation {
+      animation-name: colorAnimation;
+      animation-duration: 0.2s;
+      animation-iteration-count: infinite;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    td {
+      text-align: left;
+    }
+
+    .btn-edit, .btn-delete {
+      padding: 5px 10px;
+      border-radius: 5px;
+      text-decoration: none;
+      background-color: #4CAF50;
+      color: #fff;
+      transition: background-color 0.3s;
+      display: inline-block;
+      margin-right: 5px;
+    }
+
+    .btn-delete {
+      background-color: #f44336;
+    }
+
+    .btn-edit:hover, .btn-delete:hover {
+      background-color: #45a049;
+    }
+
+    .btn-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .btn-container:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+
+    .logout-link {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 5px;
+      text-decoration: none;
+      background-color: #4CAF50;
+      color: #fff;
+      transition: background-color 0.3s;
+    }
+
+    .home-link {
+      display: inline-block;
+      padding: 5px 10px;
+      margin-left:4px;
+      border-radius: 5px;
+      text-decoration: none;
+      background-color: #4CAF50;
+      color: #fff;
+      transition: background-color 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><a href="/board" class="text-animation" style="color: #fff; text-decoration: none;">게시판</a></h1>
+    </div>
+    <table>
+      <tr>
+        <th style="width: 7%;">번호</th>
+        <th style="width: 12%;">제목</th>
+        <th style="width: 9%;">아이디</th>
+        <th>내용</th>
+        <th style="width: 10%;">수정</th>
+        <th style="width: 10%;">삭제</th>
+      </tr>
+      <% posts.forEach(function(post) { %>
+      <tr>
+        <td><%= post.id %></td>
+        <td><%= post.title %></td>
+        <td><%= post.user_id %></td>
+        <td><%= post.content %></td>
+        <td>
+          <% if (isAdmin || (req.session.user && (post.user_id === req.session.user.id || req.session.user.id === 'admin'))) { %>
+            <a href="/board/edit/<%= post.id %>" class="btn-edit">수정</a>
+          <% } %>
+        </td>
+        <td>
+          <% if (isAdmin || (req.session.user && (post.user_id === req.session.user.id || req.session.user.id === 'admin'))) { %>
+            <a href="/board/delete/<%= post.id %>" class="btn-delete">삭제</a>
+          <% } %>
+        </td>
+      </tr>
+      <% }); %>
+    </table><br>
+    <div class="btn-container">
+      <a href="/board/create" class="btn-edit">게시글 생성</a>
+      <a href="/logout" class="btn-edit">로그아웃</a>
+      <a href="/" class="btn-edit">첫페이지로</a>
+      <a href="/useredit" class="btn-edit">회원정보수정</a>
+  </div>
+</body>
+</html>
