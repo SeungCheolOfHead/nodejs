@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>회원정보수정</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f1f1f1;
+    }
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    .getout-form {
+      text-align: center;
+    }
+    h1 {
+      color: #333;
+    }
+    p {
+      color: #777;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+    }
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+    input[type="submit"] {
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+    a {
+      display: block;
+      margin-top: 10px;
+      color: #777;
+      text-decoration: none;
+      text-align: left;
+    }
+    a:hover {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="getout-form">
+      <form action="/getout" method="POST">
+        <h1>회원탈퇴</h1>
+        <strong><p style="color:red;">탈퇴를 위한 아이디와 패스워드 검증이 있습니다.</p></strong>
+        <p>진짜로 탈퇴하십니까? 탈퇴를 거부할 권리가 있다는 사실 및 탈퇴 거부에 따른 불이익이 있는 경우에 그 불이익의 내용은 비밀입니다.</p>
+        <label for="id">아이디:</label>
+        <input type="text" id="id" name="id" required>
+        <label for="password">패스워드:</label>
+        <input type="password" id="password" name="password" required>
+        <input type="submit" value="탈퇴하기"><br><br>
+        <a href="/board">게시판으로 돌아가기</a>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

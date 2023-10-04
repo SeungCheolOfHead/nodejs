@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>취약점 점검 사이트</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #667eea, #764ba2, #6B8DD6);
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+    }
+    .container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px;
+      padding: 40px;
+      background-color: #3838c5;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      animation: fade-in 1s ease;
+    }
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    h1 {
+      text-align: center;
+      color: #fff;
+      font-size: 36px;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    p {
+      text-align: center;
+      color: #fff;
+      font-size: 18px;
+      margin-bottom: 40px;
+    }
+    .logo {
+      display: block;
+      width: 200px;
+      margin: 0 auto;
+      margin-bottom: 30px;
+    }
+    @keyframes rotate {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    .btn-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-block;
+      padding: 15px 20px;
+      margin: 11px;
+      background-color: #ffcc00;
+      color: #333;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 20px;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      animation: shadow-pulse 2s ease-in-out infinite;
+    }
+    @keyframes shadow-pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.4);
+      }
+
+      70% {
+        box-shadow: 0 0 0 20px rgba(255, 204, 0, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 204, 0, 0);
+      }
+    }
+    .btn:hover {
+      background-color: #ffdf80;
+    }
+    .btn:active {
+      transform: translateY(2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="http://localhost:8000"><img src="/소만사 로고.png"></img></a>
+    <h1> 취약점 점검 사이트</h1>
+    <p>디자인 오십 방울 첨가한</p>
+    <img src="/펭귄.jpg" alt="Logo" class="logo">
+    <!-- 링크 주소 -->
+    <div class="btn-container"><strong>
+      <a href="/register" class="btn">회원가입</a>
+      <a href="/login" class="btn">로그인</a>
+      <a href="/board" class="btn">게시판</a>
+      <a href="/logout" class="btn">로그아웃</a>
+      <a href="http://localhost:12345" class="btn"><img src="/JJAP.png"></img></a>
+    </div></strong>
+  </div>
+</body>
+</html>
