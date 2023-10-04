@@ -1,24 +1,177 @@
 <!doctype html>
 <html>
 <head>
-  <title>기능테스트입니다.</title>
-  <meta charset="utf-8">
-  <style type="text/css">
-        .pa_rang{
-            background-color:blue;
-        }
-        .ha_yang{
-            background-color:rgb(255, 255, 255);
-        }
-        .cho_rok{
-            background-color:green;
-        }
-  </style>
+    <title>하자있는 채팅 프로그램</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        h2 { text-align: center; color: #3c1e1e; font-weight: bold; margin-bottom: 20px; }
+        body { font: 13px/1.5 'Helvetica Neue', Arial, sans-serif; background-color: #f6f6f6; }
+        #container { max-width: 550px; margin: 0 auto; padding: 20px; background-color: #bacee0; border-radius: 10px; display: flex; flex-direction: column; }
+        #chatLog-wrapper { flex: 1; overflow-y: auto; max-height: 620px; /* 채팅창의 최대 높이 설정 */ }
+        #chatLog { list-style-type: none; margin: 0; padding: 0; }
+        #chatLog li { background-color: #ffeb33; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+        #chatLog li:nth-child(odd) { background-color: #ffeb33; }
+        .message-container { display: flex; align-items: flex-start; }
+        .message-container.right { justify-content: flex-end; }
+        .message-container .message { max-width: 70%; }
+        form { margin-top: 20px; }
+        form input { width: 85%; padding: 10px; padding-top: 12.8px; border: none; border-radius: 3px; }
+        form button { width: 14%; background-color: #fee500; border: none; margin-left: 1px; padding: 10px; color: #3c1e1e; border-radius: 3px; }
+        .hidden { display: none; }
+        .uploaded-image { max-width: 100%; height: auto; margin-top: 10px; }
+        .user-info-wrapper { display: flex; justify-content: flex-end; margin-top: 20px; }
+        .user-info-wrapper h3 { color: #3c1e1e; font-size: 16px; font-weight: bold; text-align: center;}
+        #user-list-container { align-self: flex-end; background-color: white; padding: 10px; border-radius: 10px; max-width: 550px; text-align:center;}
+        .user-list { list-style-type: none; padding: 0; }
+    </style>
 </head>
 <body>
-  <h1><a href="index.html">기능테스트</a></h1>
-    <input type="button" value="파랑" onclick="document.body.className='pa_rang'"/>
-    <input type="button" value="하양" onclick="document.body.className='ha_yang'"/>
-    <input type="button" value="초록" onclick="document.body.className='cho_rok'"/>
+<div id="container">
+    <h2>짭카오톡</h2>
+    <div id="chatLog-wrapper">
+        <ul id="chatLog"></ul>
+    </div>
+    <form action="" id="sendForm" class="hidden">
+        <input type="file" id="imageInput" accept="image/*">
+        <input name="message" autocomplete="off" placeholder="메시지를 입력하세요" />
+        <button type="submit">전송</button>
+    </form>
+    <form action="" id="joinForm">
+        <input name="username" autocomplete="off" placeholder="사용하실 이름을 입력하세요" />
+        <button type="submit">입장</button>
+    </form>
+</div>
+<div id="user-list-container" style="float:right">
+    <h3>★ 현재 접속한 사용자 ★</h3>
+    <ul class="user-list" id="userInfo"></ul>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    // 소켓서버에 접속시킨다.
+    var socket = io();
+
+    // 사용자 정보 표시 및 파일 업로드
+    function showUserInfo(username) {
+        $('#userInfo').text('내 이름 : [' + username + ']');
+        $('#joinForm').addClass('hidden');
+        $('#sendForm').removeClass('hidden');
+
+        // 파일 업로드 이벤트 리스너 등록
+        $('#imageInput').on('change', function(e) {
+            var file = e.target.files[0];
+            if (file) {
+                uploadFile(file);
+            }
+        });
+    }
+
+    // 파일 업로드 함수
+    function uploadFile(file) {
+        var formData = new FormData();
+        formData.append('image', file);
+
+        $.ajax({
+            url: '/upload',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                // 파일 업로드 성공 시 처리할 로직
+                console.log('File uploaded successfully.');
+            },
+            error: function(error) {
+                // 파일 업로드 실패 시 처리할 로직
+                console.error('Error uploading file:', error);
+            }
+        });
+    }
+
+    // 사용자 입장
+    $('#joinForm').submit(function () {
+        var username = $('#joinForm input[name=username]').val();
+        socket.emit('join', {username});
+        showUserInfo(username);
+        return false;
+    });
+
+    // 사용자 이름 목록 업데이트
+    function showUserList(userList) {
+        var userListContainer = $('#userInfo');
+
+        // 기존의 목록을 유지하면서 새로운 사용자를 추가하거나 나간 사용자를 제거
+        var existingUserList = userListContainer.children().toArray().map(function(element) {
+            return $(element).text();
+        });
+
+        // 새로운 사용자 추가
+        userList.forEach(function(user) {
+            if (existingUserList.indexOf(user) === -1) {
+                userListContainer.append('<li>' + user + '</li>');
+            }
+        });
+
+        // 나간 사용자 제거
+        existingUserList.forEach(function(user) {
+            if (userList.indexOf(user) === -1) {
+                userListContainer.children(':contains(' + user + ')').remove();
+            }
+        });
+    }
+
+    // 사용자 참가
+    socket.on('join', function (data) {
+        $('#chatLog').append('<li>' + data.username + '님이 입장했어요!</li>');
+        showUserList(data.userList);
+    });
+
+    // 사용자 퇴장
+    socket.on('leave', function (data) {
+        $('#chatLog').append('<li>' + data.username + '님이 도망갔어요!</li>');
+        showUserList(data.userList);
+    });
+
+    // user list 이벤트를 대기하여 사용자 리스트를 업데이트
+    socket.on('user list', function (data) {
+        showUserList(data.userList);
+    });
+
+    // server message 라는 이벤트명으로 대기
+    socket.on('server message', function (data) {
+        var messageContainerClass = (data.username === $('#userInfo').text().split(': ')[1]) ? 'message-container right' : 'message-container';
+
+        // 시간 정보 생성
+        var currentTime = new Date();
+        var hours = currentTime.getHours();
+        var minutes = currentTime.getMinutes();
+        var formattedTime = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
+
+        // 소켓서버로부터 수신한 메시지와 시간을 화면에 출력한다.
+        $('#chatLog').append('<li class="' + messageContainerClass + '"><strong>' + data.username +  ' =></strong><span class="message">' + data.message + '</span><br><span class="message-time">' + '|' + ` ` + formattedTime + '</span></li>');
+
+        // 채팅창 스크롤 자동 이동
+        var chatLogWrapper = document.getElementById('chatLog-wrapper');
+        chatLogWrapper.scrollTop = chatLogWrapper.scrollHeight;
+    });
+
+    $(document).ready(function () {
+        $('#sendForm').submit(function (e) {
+            e.preventDefault();
+            var message = $('#sendForm input[name=message]').val();
+
+            // 사용자가 입력한 메시지에서 스크립트 공격을 방지하기 위해 태그를 이스케이프 처리
+            var escapedMessage = $('<div/>').text(message).html();
+
+            // 서버로 메시지 전송
+            socket.emit('client message', {message: escapedMessage});
+            $('#sendForm input[name=message]').val('');
+
+            return false;
+        });
+    });
+</script>
 </body>
 </html>
